@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 )
 
 var filename = "news.json"
@@ -30,6 +31,14 @@ func main() {
 		ferr := mapWriter(input_res, filename)
 		if ferr != nil {
 			log.Println("Can not Read or Write a new map for the file " + filename)
+			tel_res, terr := mapToTelegram(input_res)
+			if terr != nil {
+				log.Println("Can not push the new string to telegram")
+			}
+			if tel_res {
+				log.Println("The update successfully pushed to telegram")
+			}
+			os.Exit(0)
 		}
 	}
 	// Comparing our blog and file inputs
@@ -43,7 +52,13 @@ func main() {
 		if err != nil {
 			log.Println("Can not Marshal or Write to the file " + filename)
 		}
-		// TODO: Make a telegram bot message for 'compare_maps'
+		tel_res, terr := mapToTelegram(compare_maps)
+		if terr != nil {
+			log.Println("Can not push the new string to telegram")
+		}
+		if tel_res {
+			log.Println("The update successfully pushed to telegram")
+		}
 	} else {
 		log.Println("Nothing to add. Sleeping till the next time.")
 	}
