@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func mapMerge(ms, ams map[string]string) map[string]string {
@@ -46,7 +47,7 @@ func mapWriter(ms map[string]string, fn string) error {
 	if jerr != nil {
 		return jerr
 	}
-	err := ioutil.WriteFile(filename, jsonout, os.ModePerm)
+	err := ioutil.WriteFile(fn, jsonout, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -57,10 +58,13 @@ func mapToTelegram(ms map[string]string) (bool, error) {
 	for k, v := range ms {
 		reformed := reformat(k) + reformat(" ") + reformat(v)
 		post_url := "https://api.telegram.org/bot" + os.Getenv("botToken") + "/sendMessage?chat_id=" + os.Getenv("chatID") + "&text=" + reformed
-		_, err := http.Post(post_url, "test_body", nil)
+		resp, err := http.Post(post_url, "", nil)
 		if err != nil {
 			log.Println("Something with the Telegram or link, POST request didn't pass through")
 			return false, err
+		}
+		if !strings.Contains(resp.Status, "200") {
+			return false, nil
 		}
 	}
 	return true, nil

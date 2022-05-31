@@ -56,6 +56,9 @@ func main() {
 		if terr != nil {
 			log.Println("Can not push the new string to telegram")
 		}
+		if terr == nil && !tel_res {
+			log.Println("API telegram returned was unavailable, chat not found or AUTH issues")
+		}
 		if tel_res {
 			log.Println("The update successfully pushed to telegram")
 		}
